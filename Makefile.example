@@ -1,0 +1,70 @@
+SASSC     = sass --style compact
+COMPSDIR  = resources/assets/components
+SASSDIR   = resources/assets/css
+JSDIR     = resources/assets/js
+DISTDIR   = web/dist
+CSSDIR    = $(DISTDIR)/css
+SASSINC   = $(SASSDIR) \
+	$(COMPSDIR)/asimov/src/scss \
+	$(COMPSDIR)/asimov-contests/src/scss \
+	$(COMPSDIR)/asimovicons/src/scss
+MANIFEST  = $(DISTDIR)/.manifest
+JSBINS    = node_modules/.bin
+PHPBINS   = vendor/bin
+LRURL     = http://localhost:35729/changed
+JSFILES   = $(wildcard $(JSDIR)/bundles/*.js)
+SASSFILES = $(shell find $(SASSDIR) -name '*.scss' | grep -v '/_')
+
+# default target
+all: build
+
+# build all front-end assets
+build: sass requirejs manifest
+
+# run tests
+test: test-js test-php
+
+test-js: 
+	$(JSBINS)/karma start config/karma.conf.js --single-run
+
+test-php: 
+	$(PHPBINS)/phpunit
+
+# compile a .manifest of all front-end assets
+manifest: 
+	find $(DISTDIR) -type f -exec cksum {} \; | cut -f1,3 -d" " >$(MANIFEST)
+
+# compile sass files ito dist css files
+sass: $(patsubst $(SASSDIR)/%.scss, $(CSSDIR)/%.css, $(SASSFILES))
+
+# compile sass with the native sass --update syntax
+sassupdate:
+	$(SASSC) -C $(foreach d, $(SASSINC), -I$d) --update $(SASSDIR):$(CSSDIR) 
+
+$(DISTDIR)/css/%.css: $(SASSDIR)/%.scss
+	@echo compiling $@
+	@mkdir -p $(shell dirname $@)
+	@time $(SASSC) -C $(foreach d, $(SASSINC), -I$d) $? $@
+
+# build production js with requirejs
+requirejs: $(patsubst $(JSDIR)/%, $(DISTDIR)/js/%, $(JSFILES))
+
+$(DISTDIR)/js/bundles/%.js: $(JSDIR)/bundles/%.js
+	$(JSBINS)/r.js -o $(JSDIR)/build.js include=$(patsubst $(DISTDIR)/js/%.js,%,$@) out=$@
+
+# watch assets for changes in development
+watch: 
+	$(JSBINS)/livereload $(DISTDIR) &
+	$(JSBINS)/wach -o "$(DISTDIR)/**/*" make manifest &
+	$(SASSC) $(foreach d, $(SASSINC), -I$d) --watch $(SASSDIR):$(CSSDIR) 
+
+# clean up only js directory
+clean-js:
+	-rm -rf $(DISTDIR)/js
+
+# clean up dist directory
+clean:
+	-rm -rf $(DISTDIR)
+	-rm -rf .sass-cache
+
+.PHONY: all clean clean-js watch sass requirejs manifest test test-php test-js build
