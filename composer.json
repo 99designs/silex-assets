@@ -1,4 +1,11 @@
 {
+    "name": "99designs/silex-assets",
+    "description": "Asset pipeline using make",
+    "keywords": ["asset","pipeline"],
+    "license": "MIT",
+    "authors": [
+        { "name": "Lachlan Donald", "email": "lachlan@99designs.com" }
+    ],
     "require": {
         "php" : ">=5.3.3"
     },
