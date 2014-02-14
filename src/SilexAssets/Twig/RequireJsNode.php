@@ -1,6 +1,6 @@
 <?php
 
-namespace Twig\Extensions\Assets;
+namespace SilexAssets\Twig;
 
 class RequireJsNode extends \Twig_Node
 {
@@ -29,13 +29,6 @@ class RequireJsNode extends \Twig_Node
                 if(!is_file($filePath)) {
                     throw new \Exception("Failed to find ".
                         ($this->_config['requirejs_output_dir'] . '/' . $file . '.js'));
-                }
-
-                if(isset($this->_config['manifest_files'][$filePath])) {
-                    $buster = '?'.$this->_config['manifest_files'][$filePath];
-                } else {
-                    // write cachebuster hash from asset manifest
-                    $buster = "?ts".time();
                 }
 
                 $compiler

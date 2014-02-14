@@ -1,17 +1,15 @@
 <?php
 
-namespace Twig\Extensions\Assets;
+namespace SilexAssets\Twig;
 
-class TokenParser extends \Twig_TokenParser
+class RequireJsTokenParser extends \Twig_TokenParser
 {
     private
-        $_tag,
         $_config=array()
         ;
 
-    public function __construct($tag, $config)
+    public function __construct($config)
     {
-        $this->_tag = $tag;
         $this->_config = $config;
     }
 
@@ -23,7 +21,7 @@ class TokenParser extends \Twig_TokenParser
         // parse string values until the tag end
         while (!$stream->test(\Twig_Token::BLOCK_END_TYPE)) {
             if ($stream->test(\Twig_Token::STRING_TYPE)) {
-                // 'css/myfile.css', 'css/llamas.css'
+                // 'bundle/file', 'bundle/file2'
                 $files[] = $stream->next()->getValue();
             } else {
                 $token = $stream->getCurrent();
@@ -36,26 +34,11 @@ class TokenParser extends \Twig_TokenParser
 
         $stream->expect(\Twig_Token::BLOCK_END_TYPE);
 
-        return $this->createNode($this->getTag(), $token->getLine(), $files);
-    }
-
-    private function createNode($tag, $line, $files)
-    {
-        switch($tag)
-        {
-            case 'stylesheet':
-                return new StylesheetNode($this->_config, $files, $line, $this->getTag());
-            case 'javascript':
-                return new JavascriptNode($this->_config, $files, $line, $this->getTag());
-            case 'requirejs':
-                return new RequireJsNode($this->_config, $files, $line, $this->getTag());
-            default:
-                throw new \InvalidArgumentException("Unknown tag $tag");
-        }
+        return new RequireJsNode($this->_config, $files, $token->getLine(), $this->getTag());
     }
 
     public function getTag()
     {
-        return $this->_tag;
+        return "requirejs";
     }
 }

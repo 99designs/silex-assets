@@ -24,22 +24,22 @@ build: sass requirejs manifest
 # run tests
 test: test-js test-php
 
-test-js: 
+test-js:
 	$(JSBINS)/karma start config/karma.conf.js --single-run
 
-test-php: 
+test-php:
 	$(PHPBINS)/phpunit
 
 # compile a .manifest of all front-end assets
-manifest: 
-	find $(DISTDIR) -type f -exec cksum {} \; | cut -f1,3 -d" " >$(MANIFEST)
+manifest:
+	find $(DISTDIR) -type f -exec cksum {} \; | sed -e "s#$(DISTDIR)/##" | cut -f1,3 -d" " >$(MANIFEST)
 
 # compile sass files ito dist css files
 sass: $(patsubst $(SASSDIR)/%.scss, $(CSSDIR)/%.css, $(SASSFILES))
 
 # compile sass with the native sass --update syntax
 sassupdate:
-	$(SASSC) -C $(foreach d, $(SASSINC), -I$d) --update $(SASSDIR):$(CSSDIR) 
+	$(SASSC) -C $(foreach d, $(SASSINC), -I$d) --update $(SASSDIR):$(CSSDIR)
 
 $(DISTDIR)/css/%.css: $(SASSDIR)/%.scss
 	@echo compiling $@
@@ -53,10 +53,10 @@ $(DISTDIR)/js/bundles/%.js: $(JSDIR)/bundles/%.js
 	$(JSBINS)/r.js -o $(JSDIR)/build.js include=$(patsubst $(DISTDIR)/js/%.js,%,$@) out=$@
 
 # watch assets for changes in development
-watch: 
+watch:
 	$(JSBINS)/livereload $(DISTDIR) &
 	$(JSBINS)/wach -o "$(DISTDIR)/**/*" make manifest &
-	$(SASSC) $(foreach d, $(SASSINC), -I$d) --watch $(SASSDIR):$(CSSDIR) 
+	$(SASSC) $(foreach d, $(SASSINC), -I$d) --watch $(SASSDIR):$(CSSDIR)
 
 # clean up only js directory
 clean-js:
