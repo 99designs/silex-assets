@@ -32,21 +32,34 @@ Then add the provider to your app.php file:
 ```php
 <?php
 
-$app->register(new \Silex\Provider\AssetsServiceProvider(array(
-    'css_web_path' => '/dist',
-    'css_output_dir' => __DIR__.'/../web/dist',
-    'js_web_path' => '/dist',
-    'js_output_dir' => __DIR__.'/../web/dist',
-    'requirejs_compiled' => !$app['debug'],
+$app->register(new \SilexAssets\Provider\AssetsServiceProvider(array(
+    'web_path' => '/dist',
+    'output_dir' => __DIR__.'/../web/dist',
+    'requirejs_compiled' => $app['assets.require_compiled'],
     'requirejs_output_dir' => __DIR__.'/../web/dist/js',
     'requirejs_web_path' => '/dist/js',
 )));
 ```
 
-Then you reference the twig extension to bring in templates:
+Then there are twig extensions added that use a very similar syntax to the Assetic extensions:
 
+```html
+{% stylesheets 'css/swiftly.css' 'css/asimovicons.css' %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+{% endstylesheets %}
 ```
-{% stylesheet "css/llamas.css" %}
+
+```html
+{% javascripts "js/example.js" %}
+    <script src="{{ asset_url }}"></script>
+{% endjavascripts %}
 ```
+
+```html
+{% requirejs 'bundles/frontpage' %}
+```  
+
+
+
 
 
