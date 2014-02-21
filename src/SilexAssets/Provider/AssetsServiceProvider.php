@@ -27,8 +27,9 @@ class AssetsServiceProvider implements ServiceProviderInterface
             );
         }
 
-        $app['twig'] = $app->share($app->extend('twig', function($twig) use($app) {
-            $twig->addExtension(new AssetsExtension($app['assets.manifest'], $this->_config));
+        $config = $this->_config;
+        $app['twig'] = $app->share($app->extend('twig', function($twig) use($app, $config) {
+            $twig->addExtension(new AssetsExtension($app['assets.manifest'], $config));
             return $twig;
         }));
     }
