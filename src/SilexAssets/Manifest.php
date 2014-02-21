@@ -27,9 +27,7 @@ class Manifest
                 throw new \Exception("Unexpected fgets() fail\n");
             }
             fclose($handle);
-        } else {
-            throw new \Exception("Failed to open $path, run make manifest\n");
-        }
+        } 
 
         return $manifest;
     }
@@ -44,25 +42,4 @@ class Manifest
 
         return false;
     }
-
-    /*
-
-            if(isset($this->_config['manifest'])) {
-            $this->_config['manifest_files'] =
-                $this->_parseManifest($this->_config['manifest']);
-        }
-
-        // a manifest root means manifest contains relative paths
-        if(isset($this->_config['manifest_root'])) {
-            $root = realpath($this->_config['manifest_root']);
-
-            // make paths unrelative
-            foreach($this->_config['manifest_files'] as $key=>$val) {
-                unset($this->_config['manifest_files'][$key]);
-                $this->_config['manifest_files'][$root . '/' . $key] = $val;
-            }
-        }
-
-        */
-
 }
