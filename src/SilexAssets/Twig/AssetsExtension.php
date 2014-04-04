@@ -14,7 +14,7 @@ class AssetsExtension extends \Twig_Extension
 
     public function getName()
     {
-        return 'assets';
+        return 'silex_assets_extension';
     }
 
     function getTokenParsers()
