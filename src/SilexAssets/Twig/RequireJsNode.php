@@ -4,36 +4,35 @@ namespace SilexAssets\Twig;
 
 class RequireJsNode extends \Twig_Node
 {
-    private
-        $_config=array(),
-        $_files=array()
-        ;
+    private $config;
+    private $manifest;
+    private $files = array();
 
-    public function __construct($config, $files, $line, $tag = null)
+    public function __construct($manifest, $config, $files, $line, $tag = null)
     {
         parent::__construct(array(), array(), $line, $tag);
 
-        $this->_config = $config;
-        $this->_files = $files;
+        $this->manifest = $manifest;
+        $this->config = $config;
+        $this->files = $files;
     }
 
     public function compile(\Twig_Compiler $compiler)
     {
         $compiler->addDebugInfo($this);
 
-        foreach($this->_files as $file) {
-            if($this->_config['requirejs_compiled']) {
-                $webPath = $this->_config['requirejs_web_path'] . '/' . $file. '.js';
-                $filePath = realpath($this->_config['requirejs_output_dir'] . '/' . $file . '.js');
+        foreach($this->files as $file) {
+            if($this->config['requirejs_compiled']) {
+                $filePath = realpath($this->config['requirejs_output_dir'] . '/' . $file . '.js');
 
                 if(!is_file($filePath)) {
                     throw new \Exception("Failed to find ".
-                        ($this->_config['requirejs_output_dir'] . '/' . $file . '.js'));
+                        ($this->config['requirejs_output_dir'] . '/' . $file . '.js'));
                 }
 
                 $compiler
                     ->write(sprintf(
-                        'echo "<script src=\"%s?%s\"></script>"', $webPath, $buster
+                        'echo "<script src=\"%s\"></script>"', $this->getAssetUrl($file)
                     ))
                     ->raw(";\n")
                 ;
@@ -46,5 +45,15 @@ class RequireJsNode extends \Twig_Node
                 ->raw(";\n")
             ;
         }
+    }
+
+    private function getAssetUrl($asset)
+    {
+        if($checksum = $this->manifest->getChecksum("js/" . $asset . ".js")) {
+            $buster = "?".$checksum;
+        } else {
+            $buster = "?t".time();
+        }
+        return $this->config['requirejs_web_path'] . '/' . $asset .  ".js" . $buster;
     }
 }

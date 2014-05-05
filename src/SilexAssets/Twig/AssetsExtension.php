@@ -4,12 +4,13 @@ namespace SilexAssets\Twig;
 
 class AssetsExtension extends \Twig_Extension
 {
-    private $_config, $_manifest;
+    private $config;
+    private $manifest;
 
     public function __construct($manifest, $config=array())
     {
-        $this->_manifest = $manifest;
-        $this->_config = $config;
+        $this->manifest = $manifest;
+        $this->config = $config;
     }
 
     public function getName()
@@ -19,11 +20,11 @@ class AssetsExtension extends \Twig_Extension
 
     function getTokenParsers()
     {
-    	return array(
-    		new AssetTokenParser('stylesheets', $this->_manifest, $this->_config),
-            new AssetTokenParser('javascripts', $this->_manifest, $this->_config),
-    		new RequireJsTokenParser($this->_config, $this->_manifest),
-    	);
+      return array(
+          new AssetTokenParser('stylesheets', $this->manifest, $this->config),
+          new AssetTokenParser('javascripts', $this->manifest, $this->config),
+          new RequireJsTokenParser($this->manifest, $this->config),
+      );
     }
 
     public function getFunctions()

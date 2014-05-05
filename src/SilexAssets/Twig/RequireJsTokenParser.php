@@ -4,13 +4,13 @@ namespace SilexAssets\Twig;
 
 class RequireJsTokenParser extends \Twig_TokenParser
 {
-    private
-        $_config=array()
-        ;
+    private $manifest;
+    private $config = array();
 
-    public function __construct($config)
+    public function __construct($manifest, $config)
     {
-        $this->_config = $config;
+        $this->manifest = $manifest;
+        $this->config = $config;
     }
 
     public function parse(\Twig_Token $token)
@@ -34,7 +34,13 @@ class RequireJsTokenParser extends \Twig_TokenParser
 
         $stream->expect(\Twig_Token::BLOCK_END_TYPE);
 
-        return new RequireJsNode($this->_config, $files, $token->getLine(), $this->getTag());
+        return new RequireJsNode(
+            $this->manifest,
+            $this->config,
+            $files,
+            $token->getLine(),
+            $this->getTag()
+        );
     }
 
     public function getTag()
