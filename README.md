@@ -56,6 +56,13 @@ Then there are twig extensions added that use a very similar syntax to the Asset
 ```
 
 ```html
+{% assets "js/example.js" %}
+    <script src="{{ asset_url }}"></script>
+{% endassets %}
+```
+
+
+```html
 {% requirejs 'bundles/frontpage' %}
 ```  
 

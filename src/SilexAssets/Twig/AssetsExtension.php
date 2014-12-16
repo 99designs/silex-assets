@@ -23,6 +23,7 @@ class AssetsExtension extends \Twig_Extension
       return array(
           new AssetTokenParser('stylesheets', $this->manifest, $this->config),
           new AssetTokenParser('javascripts', $this->manifest, $this->config),
+          new AssetTokenParser('assets', $this->manifest, $this->config),
           new RequireJsTokenParser($this->manifest, $this->config),
       );
     }
