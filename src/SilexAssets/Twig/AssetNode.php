@@ -50,11 +50,32 @@ class AssetNode extends \Twig_Node
 
     public function getAssetUrl($asset)
     {
-        if($checksum = $this->_manifest->getChecksum($asset)) {
+        $checksum = $this->_manifest->getChecksum($asset);
+        if ($this->_config['mode'] == 'rename') {
+            return $this->getAssetHashUrl($asset, $checksum);
+        } else {
+            return $this->getAssetQueryStringUrl($asset, $checksum);
+        }
+    }
+
+    private function getAssetQueryStringUrl($asset, $checksum)
+    {
+        if ($checksum) {
             $buster = "?".$checksum;
         } else {
             $buster = "?t".time();
         }
         return $this->_config['web_path'] . '/' . $asset . $buster;
+    }
+
+    private function getAssetHashUrl($asset, $checksum)
+    {
+        if (!$checksum)
+        {
+            throw new \SilexAssets\Twig\MissingChecksumException($asset);
+        }
+
+        $pathinfo = pathinfo($asset);
+        return $this->_config['web_path'] . '/' . $checksum . '.' . $pathinfo['extension'];
     }
 }

@@ -38,6 +38,7 @@ $app->register(new \SilexAssets\Provider\AssetsServiceProvider(array(
     'requirejs_compiled' => $app['assets.require_compiled'],
     'requirejs_output_dir' => __DIR__.'/../web/dist/js',
     'requirejs_web_path' => '/dist/js',
+    'mode' => 'query_string',
 )));
 ```
 
@@ -64,7 +65,22 @@ Then there are twig extensions added that use a very similar syntax to the Asset
 
 ```html
 {% requirejs 'bundles/frontpage' %}
-```  
+```
+
+Cache busting modes
+-------------------
+
+There are who `modes` available.
+
+**query_string** _(default)_
+
+Appends the CRC32 checksum as a query string parameter
+
+**rename**
+
+Rewrites the asset path to the be the CRC32 checksum. The asset's original file extension is preserved.
+
+This mode throws `\SilexAssets\Twig\MissingChecksumException` if there is no manifest entry for an `asset_url`.
 
 
 
